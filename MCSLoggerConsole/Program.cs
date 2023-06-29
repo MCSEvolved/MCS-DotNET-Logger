@@ -10,7 +10,8 @@ string serviceID = "MCSLogger-DotNET-Tests";
 Logger logger = new(logURL, serviceID, authorizationHandler)
 {
     ErrorOnHttpFail = true,
-    SendLogsToServer = true
+    SendLogsToServer = true,
+    PrintToConsole = true
 };
 
 logger.LogInfo("This is a test log of type info via console app");
