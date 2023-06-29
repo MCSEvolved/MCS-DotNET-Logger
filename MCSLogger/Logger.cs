@@ -83,15 +83,27 @@ namespace MCSLogger
         {
             HttpResponseMessage response = await httpClient.PostAsJsonAsync("", log);
 
+            if (response.IsSuccessStatusCode) return;
+            await HandleHttpFail(response, log);
+        }
+
+        private async Task HandleHttpFail(HttpResponseMessage response, Log log)
+        {
+            if (response.IsSuccessStatusCode) return;
+
             if (response.StatusCode == HttpStatusCode.Unauthorized && endpointShouldBeAuthorized)
             {
                 SetAuthorizationHeaderWithNewToken();
                 response = await httpClient.PostAsJsonAsync("", log);
             }
 
-            if (!response.IsSuccessStatusCode && ErrorOnHttpFail)
+            if (ErrorOnHttpFail)
             {
                 throw new HttpRequestException($"Failed to send log to server. Status code: {response.StatusCode}. Message: {response.Content}");
+            }
+            else
+            {
+                Console.WriteLine($"Failed to send log to server. Status code: {response.StatusCode}. Message: {response.Content}");
             }
         }
 
